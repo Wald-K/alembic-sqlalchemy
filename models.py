@@ -1,9 +1,8 @@
 from sqlalchemy.orm import declarative_base, Mapped, mapped_column
 import datetime
 from sqlalchemy import func
-from db import session_maker
+from db import session_maker, Base
 
-Base = declarative_base()
 
 class UserModel(Base):
     __tablename__ = "user"
@@ -11,22 +10,28 @@ class UserModel(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     first_name: Mapped[str] = mapped_column(nullable=False)
     last_name: Mapped[str] = mapped_column(nullable=False)
-    birth: Mapped[datetime.date] = mapped_column(nullable=True)
+    birth: Mapped[datetime.datetime] = mapped_column(nullable=True)
     created: Mapped[datetime.datetime] = mapped_column(insert_default=func.now())
+    
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
     
 
 
-
-example_users = [
-    UserModel(first_name="Wald", last_name="Mickiewicz", birth=datetime.datetime(1972, 3, 18)),
-    UserModel(first_name="Roman", last_name="Black", birth=datetime.datetime(1970, 4, 9)),
-]
-
-def create_users():
+def create_users(users_list):
     with session_maker() as session:
-        for user in example_users:
+        for user in users_list:
             session.add(user)
         session.commit()
+        print(f"{len(users_list)} Users created")
         
-
-# create_users()
+def show_users():
+    with session_maker() as session:
+        users = session.query(UserModel).all()
+        if users:
+            for user in users:
+                print(user.full_name)
+        else:
+            print("No users in Database")
+        

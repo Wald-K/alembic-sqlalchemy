@@ -39,10 +39,18 @@ alembic upgrade heads
 
 6. Put example data to database.
 
-Uncomment `create_users()` and run:
+Uncomment `create_users(example_users)` and run:
 
 ```
-python manager.py models.py
+python main.py
+```
+
+7. Show data from database.
+
+Uncomment `show_users())` and run:
+
+```
+python main.py
 ```
 
 
